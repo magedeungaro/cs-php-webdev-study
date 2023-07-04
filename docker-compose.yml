@@ -1,24 +1,24 @@
-version: "3.8"
-services: 
-  # Database server
-  database:
-    image: mysql:8.0
-    ports: 
-      - 3306:3306
+version: "2.18"
+services:
+  www:
+    image: php:8.2-apache
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - 80:80
+      - 443:443
+  db:
+    image: mysql:latest
     environment:
       - MYSQL_DATABASE=${DB_DATABASE}
       - MYSQL_USER=${DB_USERNAME}
       - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
-    volumes:
-      - db-data:/var/lib/mysql
-
-  # Redis server
-  redis:
-    image: redis:alpine
-    command: redis-server --appendonly yes--requirepass ${REDIS_PASSWORD}
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
     ports:
-      - 6379:6379
-  
-volumes:
-  db-data: ~
+      - 8001:80
+    environment:
+      - PMA_PORT=${DB_PORT}
+      - PMA_HOST=db
